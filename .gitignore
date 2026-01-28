@@ -206,5 +206,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Custom
-training_data
+# Voice Recorder App
+# Exclude audio recordings and emotion metadata
+recordings/
+*.wav
+*.json
