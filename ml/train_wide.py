@@ -112,7 +112,7 @@ if __name__ == "__main__":
         callbacks.EarlyStopping(monitor='val_accuracy', patience=12, restore_best_weights=True, verbose=1),
         callbacks.ModelCheckpoint(os.path.join(SAVE_DIR, f"{MODEL_NAME}.h5"), save_best_only=True),
         # Crucial: Slow down learning if we get stuck
-        callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1)
+        callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
     ]
     
     model.fit(X_train, y_train, validation_data=(X_val, y_val), 

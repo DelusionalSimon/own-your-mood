@@ -6,17 +6,17 @@ from tensorflow.keras import layers, models, callbacks
 from sklearn.model_selection import train_test_split
 
 # --- CONFIG ---
-USE_MODEL = "RESNET"   # "TCN" or "RESNET"
+USE_MODEL = "TCN"   # "TCN" or "RESNET"
 DATASET   = "CREMAD"   # "RAVDESS" or "CREMAD"
 SAMPLE_RATE = 16000
 DURATION = 3 # seconds
 INPUT_LEN = SAMPLE_RATE * DURATION
-BATCH_SIZE = 64 
+BATCH_SIZE = 32 
 EPOCHS = 150    
 
 # --- SAVE SETTINGS ---
 SAVE_DIR = "../models"
-BASE_FILENAME = "voice_model"
+BASE_FILENAME = "voice_model3"
 MODEL_PATH = "../models"
 
 # Dataset Specifics
@@ -181,6 +181,8 @@ if __name__ == "__main__":
     if USE_MODEL == "TCN":
         print("Building TCN Model...")
         model = build_tcn_model()
+        #Lower LR (0.001 -> 0.0002) and Add Gradient Clipping (clipnorm)
+        opt = tf.keras.optimizers.Adam(learning_rate=0.00005, clipnorm=0.5)
     else:
         print("Building ResNet Model...")
         model = build_resnet_model()
