@@ -15,7 +15,7 @@ import json
 class VoiceRecorder:
     """Handles audio recording and playback functionality"""
     
-    def __init__(self, sample_rate=44100, channels=1):
+    def __init__(self, sample_rate=16000, channels=1):
         self.sample_rate = sample_rate
         self.channels = channels
         self.recording = False
