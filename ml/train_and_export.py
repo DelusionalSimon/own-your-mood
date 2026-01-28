@@ -10,10 +10,11 @@ USE_MODEL = "RESNET" # Options: "TCN" or "RESNET"
 SAMPLE_RATE = 16000
 DURATION = 3 # seconds
 INPUT_LEN = SAMPLE_RATE * DURATION
-BATCH_SIZE = 16 
-EPOCHS = 100    
+BATCH_SIZE = 64 
+EPOCHS = 150    
 EMOTIONS = ["Neutral", "Calm", "Happy", "Sad", "Angry", "Fearful", "Disgust", "Surprised"]
 NUM_CLASSES = len(EMOTIONS)
+MODEL_PATH = "./models"
 
 # --- GPU SETUP ---
 gpus = tf.config.list_physical_devices('GPU')
