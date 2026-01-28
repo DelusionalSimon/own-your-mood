@@ -211,3 +211,10 @@ __marimo__/
 recordings/
 *.wav
 *.json
+
+# ML stuff
+models/
+documentation/
+training_data/
+
+
