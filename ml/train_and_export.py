@@ -58,6 +58,68 @@ def build_resnet_1d():
                   metrics=['accuracy'])
     return model
 
+# --------------[TCN APPROACH]------------
+def tcn_block(x, filters, kernel_size, dilation_rate, dropout_rate=0.05):
+    prev_x = x
+    
+    # 1. Dilated Convolution (The Magic)
+    # "causal" padding ensures we don't cheat by looking into the future
+    # (though for classification, 'same' is also acceptable)
+    x = layers.Conv1D(filters=filters, 
+                      kernel_size=kernel_size, 
+                      padding='same',  # Keep 'same' for simple classification
+                      dilation_rate=dilation_rate,
+                      activation='relu')(x)
+    
+    x = layers.BatchNormalization()(x)
+    x = layers.SpatialDropout1D(dropout_rate)(x)
+    
+    # 2. Second Conv (Standard)
+    x = layers.Conv1D(filters=filters, 
+                      kernel_size=kernel_size, 
+                      padding='same', 
+                      dilation_rate=dilation_rate,
+                      activation='relu')(x)
+    
+    x = layers.BatchNormalization()(x)
+    x = layers.SpatialDropout1D(dropout_rate)(x)
+    
+    # 3. Residual Connection
+    # If shapes don't match (e.g. filter change), project prev_x
+    if prev_x.shape[-1] != filters:
+        prev_x = layers.Conv1D(filters, 1, padding='same')(prev_x)
+        
+    x = layers.Add()([x, prev_x])
+    return layers.ReLU()(x)
+
+def build_tcn_model(input_shape=(48000, 1), num_classes=8):
+    inputs = layers.Input(shape=input_shape)
+    
+    # Initial Downsampling (Stem)
+    # Raw audio is huge (48k), we need to crunch it down a bit first
+    x = layers.Conv1D(32, 7, strides=4, padding='same', activation='relu')(inputs)
+    x = layers.MaxPooling1D(3, strides=2, padding='same')(x)
+    
+    # TCN Stack
+    # We increase dilation rate (1, 2, 4, 8) to see wider context
+    x = tcn_block(x, filters=64, kernel_size=3, dilation_rate=1)
+    x = tcn_block(x, filters=64, kernel_size=3, dilation_rate=2)
+    x = tcn_block(x, filters=128, kernel_size=3, dilation_rate=4)
+    x = tcn_block(x, filters=128, kernel_size=3, dilation_rate=8)
+    x = tcn_block(x, filters=256, kernel_size=3, dilation_rate=16)
+
+    # Classification Head
+    x = layers.GlobalAveragePooling1D()(x)
+    x = layers.Dense(128, activation='relu')(x)
+    x = layers.Dropout(0.4)(x)
+    outputs = layers.Dense(num_classes, activation='softmax')(x)
+    
+    model = models.Model(inputs, outputs, name="TCN_Audio_Emotion")
+    
+    model.compile(optimizer='adam', 
+                  loss='sparse_categorical_crossentropy', 
+                  metrics=['accuracy'])
+    return model
 
 # --------------[DATA LOADING]------------
 def load_dataset(data_dir):
