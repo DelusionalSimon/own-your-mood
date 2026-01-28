@@ -142,7 +142,7 @@ class VoiceRecorder:
                 'timestamp': datetime.fromtimestamp(file.stat().st_mtime),
                 'size': file.stat().st_size,
                 'emotion': emotion_data.get('emotion'),
-                'emotion_confidence': emotion_data.get('confidence'),
+                'emotion_intensity': emotion_data.get('intensity'),
                 'emotion_color': emotion_data.get('color'),
                 'emotion_emoji': emotion_data.get('emoji'),
             })

@@ -5,6 +5,7 @@ A modern voice recording application built with Flet
 import flet as ft
 from voice_recorder import VoiceRecorder
 from emotion_detector import EmotionDetector
+from analytics import EmotionAnalytics
 import threading
 import time
 
@@ -25,6 +26,8 @@ class VoiceRecorderApp:
         self.timer_text = None
         self.recording_indicator = None
         self.recordings_list = None
+        self.tabs = None
+        self.analytics_content = None
         
         self.setup_page()
         self.build_ui()
@@ -34,12 +37,12 @@ class VoiceRecorderApp:
         self.page.title = "Voice Recorder"
         self.page.theme_mode = ft.ThemeMode.DARK
         self.page.padding = 20
-        self.page.window.width = 500
-        self.page.window.height = 700
+        self.page.window.width = 600
+        self.page.window.height = 750
         self.page.window.resizable = True
     
     def build_ui(self):
-        """Build the user interface"""
+        """Build the user interface with navigation"""
         # Header
         header = ft.Container(
             content=ft.Row(
@@ -52,6 +55,72 @@ class VoiceRecorderApp:
             margin=ft.Margin(0, 0, 0, 20),
         )
         
+        # Navigation buttons
+        self.recorder_btn = ft.ElevatedButton(
+            "Recorder",
+            icon=ft.Icons.MIC,
+            on_click=lambda e: self.switch_view(0),
+            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400),
+        )
+        
+        self.analytics_btn = ft.ElevatedButton(
+            "Analytics",
+            icon=ft.Icons.BAR_CHART,
+            on_click=lambda e: self.switch_view(1),
+        )
+        
+        nav_row = ft.Row(
+            [self.recorder_btn, self.analytics_btn],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=10,
+        )
+        
+        # Content container
+        self.recorder_content = self.build_recorder_tab()
+        self.content_container = ft.Container(
+            content=self.recorder_content,
+            expand=True,
+        )
+        
+        # Main layout
+        self.page.add(
+            ft.Column(
+                [
+                    header,
+                    nav_row,
+                    ft.Container(height=10),
+                    self.content_container,
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True,
+            )
+        )
+        
+        # Load existing recordings
+        self.refresh_recordings_list()
+    
+    def switch_view(self, index):
+        """Switch between recorder and analytics views"""
+        if index == 0:
+            # Recorder view
+            self.recorder_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400)
+            self.analytics_btn.style = ft.ButtonStyle()
+            # Don't rebuild recorder tab - it has active components
+            # Just make sure it's visible
+            if self.content_container.content != self.recorder_content:
+                self.content_container.content = self.recorder_content
+        else:
+            # Analytics view
+            self.recorder_btn.style = ft.ButtonStyle()
+            self.analytics_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400)
+            # Rebuild analytics to get fresh data
+            self.content_container.content = self.build_analytics_tab()
+        
+        self.content_container.update()
+        self.page.update()
+    
+    def build_recorder_tab(self):
+        """Build the recorder tab content"""
         # Recording indicator
         self.recording_indicator = ft.Container(
             content=ft.Row(
@@ -143,11 +212,9 @@ class VoiceRecorderApp:
             margin=ft.Margin(0, 30, 0, 10),
         )
         
-        # Main layout
-        self.page.add(
-            ft.Column(
+        return ft.Container(
+            content=ft.Column(
                 [
-                    header,
                     self.recording_indicator,
                     timer_container,
                     controls_row,
@@ -160,11 +227,193 @@ class VoiceRecorderApp:
                     ),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
+            ),
+            padding=10,
+        )
+    
+    def build_analytics_tab(self):
+        """Build the analytics tab content"""
+        recordings = self.recorder.get_recordings()
+        analytics = EmotionAnalytics(recordings)
+        stats = analytics.get_summary_stats()
+        
+        # Summary cards
+        total_card = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("Total Recordings", size=14, color=ft.Colors.GREY_500),
+                    ft.Text(str(stats['total_recordings']), size=32, weight=ft.FontWeight.BOLD),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=5,
+            ),
+            bgcolor=ft.Colors.BLUE_GREY_900,
+            border_radius=10,
+            padding=20,
+            expand=True,
         )
         
-        # Load existing recordings
-        self.refresh_recordings_list()
+        emotions_card = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("With Emotions", size=14, color=ft.Colors.GREY_500),
+                    ft.Text(str(stats['recordings_with_emotions']), size=32, weight=ft.FontWeight.BOLD),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=5,
+            ),
+            bgcolor=ft.Colors.BLUE_GREY_900,
+            border_radius=10,
+            padding=20,
+            expand=True,
+        )
+        
+        most_common_emotion = stats['most_common_emotion']
+        if most_common_emotion:
+            emotion_info = self.emotion_detector.get_emotion_info(most_common_emotion)
+            most_common_text = f"{emotion_info['emoji']} {most_common_emotion.capitalize()}"
+        else:
+            most_common_text = "N/A"
+        
+        most_common_card = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("Most Common", size=14, color=ft.Colors.GREY_500),
+                    ft.Text(most_common_text, size=20, weight=ft.FontWeight.BOLD),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=5,
+            ),
+            bgcolor=ft.Colors.BLUE_GREY_900,
+            border_radius=10,
+            padding=20,
+            expand=True,
+        )
+        
+        summary_row = ft.Row(
+            [total_card, emotions_card, most_common_card],
+            spacing=10,
+        )
+        
+        # Emotion distribution
+        emotion_items = []
+        for emotion, percentage in stats['emotion_percentages'].items():
+            count = stats['emotion_distribution'][emotion]
+            emotion_info = self.emotion_detector.get_emotion_info(emotion)
+            
+            emotion_items.append(
+                ft.Container(
+                    content=ft.Row(
+                        [
+                            ft.Container(
+                                content=ft.Row(
+                                    [
+                                        ft.Text(emotion_info['emoji'], size=20),
+                                        ft.Text(emotion.capitalize(), size=16, weight=ft.FontWeight.BOLD),
+                                    ],
+                                    spacing=8,
+                                ),
+                                expand=True,
+                            ),
+                            ft.Text(f"{count}x", size=14, color=ft.Colors.GREY_500),
+                            ft.Text(f"{percentage:.1f}%", size=16, weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    bgcolor=emotion_info['color'],
+                    border_radius=8,
+                    padding=15,
+                    margin=ft.Margin(0, 0, 0, 8),
+                )
+            )
+        
+        if not emotion_items:
+            emotion_items.append(
+                ft.Container(
+                    content=ft.Text(
+                        "No emotion data yet. Record some audio to see analytics!",
+                        color=ft.Colors.GREY_500,
+                        italic=True,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    padding=30,
+                )
+            )
+        
+        emotion_distribution = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("Emotion Distribution", size=20, weight=ft.FontWeight.BOLD),
+                    ft.Container(height=10),
+                    ft.Column(emotion_items, scroll=ft.ScrollMode.AUTO, height=250),
+                ],
+            ),
+            border=ft.border.all(1, ft.Colors.BLUE_GREY_700),
+            border_radius=10,
+            padding=15,
+        )
+        
+        # Intensity breakdown
+        intensity_items = []
+        for intensity, count in stats['intensity_distribution'].items():
+            total_with_emotions = stats['recordings_with_emotions']
+            percentage = (count / total_with_emotions * 100) if total_with_emotions > 0 else 0
+            
+            intensity_items.append(
+                ft.Container(
+                    content=ft.Row(
+                        [
+                            ft.Text(intensity.capitalize(), size=16, weight=ft.FontWeight.BOLD, expand=True),
+                            ft.Text(f"{count}x", size=14, color=ft.Colors.GREY_500),
+                            ft.Text(f"{percentage:.1f}%", size=16, weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    bgcolor=ft.Colors.BLUE_GREY_900,
+                    border_radius=8,
+                    padding=15,
+                    margin=ft.Margin(0, 0, 0, 8),
+                )
+            )
+        
+        if not intensity_items:
+            intensity_items.append(
+                ft.Container(
+                    content=ft.Text(
+                        "No intensity data yet",
+                        color=ft.Colors.GREY_500,
+                        italic=True,
+                    ),
+                    padding=20,
+                )
+            )
+        
+        intensity_breakdown = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("Intensity Levels", size=20, weight=ft.FontWeight.BOLD),
+                    ft.Container(height=10),
+                    ft.Column(intensity_items),
+                ],
+            ),
+            border=ft.border.all(1, ft.Colors.BLUE_GREY_700),
+            border_radius=10,
+            padding=15,
+        )
+        
+        return ft.Container(
+            content=ft.Column(
+                [
+                    summary_row,
+                    ft.Container(height=20),
+                    emotion_distribution,
+                    ft.Container(height=20),
+                    intensity_breakdown,
+                ],
+                scroll=ft.ScrollMode.AUTO,
+            ),
+            padding=10,
+        )
     
     def start_recording(self, e):
         """Start recording audio"""
@@ -302,12 +551,18 @@ class VoiceRecorderApp:
         # Create emotion badge if emotion data exists
         emotion_badge = None
         if recording.get('emotion'):
+            # Format emotion text with intensity
+            intensity = recording.get('emotion_intensity', '')
+            emotion_text = recording['emotion'].capitalize()
+            if intensity:
+                emotion_text = f"{emotion_text} ({intensity})"
+            
             emotion_badge = ft.Container(
                 content=ft.Row(
                     [
                         ft.Text(recording['emotion_emoji'], size=14),
                         ft.Text(
-                            recording['emotion'].capitalize(),
+                            emotion_text,
                             size=12,
                             weight=ft.FontWeight.BOLD,
                         ),
