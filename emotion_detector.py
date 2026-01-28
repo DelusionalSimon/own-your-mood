@@ -12,15 +12,18 @@ class EmotionDetector:
     """Mock emotion detection for voice recordings"""
     
     # Available emotions with associated colors and emojis
+    # Based on the 6 basic emotions (Ekman's model)
     EMOTIONS = {
-        'happy': {'color': '#4CAF50', 'emoji': '😊', 'icon': 'sentiment_satisfied'},
-        'sad': {'color': '#2196F3', 'emoji': '😢', 'icon': 'sentiment_dissatisfied'},
-        'angry': {'color': '#F44336', 'emoji': '😠', 'icon': 'sentiment_very_dissatisfied'},
-        'calm': {'color': '#00BCD4', 'emoji': '😌', 'icon': 'spa'},
-        'anxious': {'color': '#FF9800', 'emoji': '😰', 'icon': 'psychology'},
-        'neutral': {'color': '#9E9E9E', 'emoji': '😐', 'icon': 'sentiment_neutral'},
-        'excited': {'color': '#E91E63', 'emoji': '🤩', 'icon': 'celebration'},
+        'happiness': {'color': '#4CAF50', 'emoji': '😊', 'icon': 'sentiment_satisfied'},
+        'sadness': {'color': '#2196F3', 'emoji': '😢', 'icon': 'sentiment_dissatisfied'},
+        'fear': {'color': '#9C27B0', 'emoji': '😨', 'icon': 'psychology_alt'},
+        'disgust': {'color': '#795548', 'emoji': '🤢', 'icon': 'sick'},
+        'anger': {'color': '#F44336', 'emoji': '😠', 'icon': 'sentiment_very_dissatisfied'},
+        'surprise': {'color': '#FF9800', 'emoji': '😲', 'icon': 'auto_awesome'},
     }
+    
+    # Intensity levels
+    INTENSITY_LEVELS = ['low', 'medium', 'high']
     
     def __init__(self):
         """Initialize the emotion detector"""
@@ -34,7 +37,7 @@ class EmotionDetector:
             audio_file_path: Path to the audio file
             
         Returns:
-            dict: Emotion analysis result with emotion, confidence, and metadata
+            dict: Emotion analysis result with emotion, intensity, and metadata
         """
         # Simulate processing time
         time.sleep(self.processing_time)
@@ -42,25 +45,25 @@ class EmotionDetector:
         # Check if file exists
         if not Path(audio_file_path).exists():
             return {
-                'emotion': 'neutral',
-                'confidence': 0.5,
+                'emotion': 'sadness',
+                'intensity': 'low',
                 'error': 'File not found'
             }
         
-        # Mock analysis: randomly select an emotion
+        # Mock analysis: randomly select an emotion and intensity
         # In production, this would analyze audio features:
-        # - Pitch variations
-        # - Speaking rate
-        # - Voice intensity
+        # - Pitch variations (high pitch = fear/surprise, low = sadness)
+        # - Speaking rate (fast = anger/fear, slow = sadness)
+        # - Voice intensity (loud = anger, quiet = sadness/fear)
         # - Spectral features
         # - etc.
         
         emotion = random.choice(list(self.EMOTIONS.keys()))
-        confidence = random.uniform(0.65, 0.95)  # Realistic confidence range
+        intensity = random.choice(self.INTENSITY_LEVELS)
         
         result = {
             'emotion': emotion,
-            'confidence': round(confidence, 2),
+            'intensity': intensity,
             'color': self.EMOTIONS[emotion]['color'],
             'emoji': self.EMOTIONS[emotion]['emoji'],
             'icon': self.EMOTIONS[emotion]['icon'],
@@ -79,7 +82,7 @@ class EmotionDetector:
         Returns:
             dict: Emotion metadata (color, emoji, icon)
         """
-        return self.EMOTIONS.get(emotion_name.lower(), self.EMOTIONS['neutral'])
+        return self.EMOTIONS.get(emotion_name.lower(), self.EMOTIONS['sadness'])
     
     def get_all_emotions(self):
         """Get list of all available emotions"""
@@ -92,9 +95,11 @@ if __name__ == "__main__":
     
     print("Mock Emotion Detector - Test Run")
     print("=" * 50)
-    print("\nAvailable emotions:")
+    print("\nAvailable emotions (6 basic emotions):")
     for emotion, info in detector.EMOTIONS.items():
         print(f"  {info['emoji']} {emotion.capitalize()}: {info['color']}")
+    
+    print(f"\nIntensity levels: {', '.join(detector.INTENSITY_LEVELS)}")
     
     print("\n" + "=" * 50)
     print("Simulating emotion detection...")
@@ -105,5 +110,5 @@ if __name__ == "__main__":
         print(f"\nRecording {i+1}:")
         result = detector.analyze_audio("mock_recording.wav")
         print(f"  Emotion: {result['emoji']} {result['emotion'].capitalize()}")
-        print(f"  Confidence: {result['confidence']*100:.1f}%")
+        print(f"  Intensity: {result['intensity'].capitalize()}")
         print(f"  Color: {result['color']}")
