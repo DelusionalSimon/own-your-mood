@@ -6,7 +6,7 @@ import random
 
 # --- CONFIG ---
 # Make sure this matches your saved filename
-MODEL_FILE = "./models/voice_vitals_resnet_0.65acc.tflite" 
+MODEL_FILE = "../models/voice_vitals_resnet_0.65acc.tflite" 
 DATA_DIR = "../training_data/archive" # Path to RAVDESS
 SAMPLE_RATE = 16000
 DURATION = 3

@@ -20,6 +20,8 @@ def preprocess_single_file(file_path):
     try:
         # Load audio: Forces 16kHz and Mono (crucial for phone recordings)
         audio, _ = librosa.load(file_path, sr=SAMPLE_RATE, mono=True)
+        # Normalize to -1.0 to 1.0 range (fixes "Angry" bias from loud mics)
+        max_val = np.max(np.abs(audio))
     except Exception as e:
         print(f"Error loading file: {e}")
         return None
