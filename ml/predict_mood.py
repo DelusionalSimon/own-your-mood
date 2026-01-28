@@ -5,7 +5,7 @@ import tensorflow as tf
 
 # --- CONFIGURATION ---
 # 1. Path to your recorded .wav file
-target_file = "../training_data/test/Surprise.wav" 
+target_file = "../training_data/test/Neutral.wav" 
 
 # 2. Which model to use? (Check your ./models folder)
 model_path = "../models/voice_model_cremad_resnet.tflite" 
