@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Voice Recorder App
+# Exclude audio recordings and emotion metadata
+recordings/
+*.wav
+*.json
