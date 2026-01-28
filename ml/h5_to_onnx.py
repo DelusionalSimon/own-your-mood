@@ -4,9 +4,9 @@ from tensorflow.keras import models
 import tf2onnx
 
 # --- CONFIG ---
-# Your best model (The CREMA one)
-MODEL_PATH = "./models/voice_model_cremad_resnet.h5" 
-ONNX_PATH  = "./models/voice_model_cremad_resnet.onnx"
+# The model to convert (ensure this matches your saved filename)
+MODEL_PATH = "../models/voice_model_cremad_resnet.h5" 
+ONNX_PATH  = "../models/voice_model_resnet_CREMA-D.onnx"
 
 def convert_to_onnx():
     if not os.path.exists(MODEL_PATH):
@@ -28,7 +28,7 @@ def convert_to_onnx():
         output_path=ONNX_PATH
     )
     
-    print("✅ SUCCESS!")
+    print("SUCCESS!")
     print(f"ONNX file ready for Embedl: {ONNX_PATH}")
 
 if __name__ == "__main__":
