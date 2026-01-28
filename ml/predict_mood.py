@@ -5,7 +5,7 @@ import tensorflow as tf
 
 # --- CONFIGURATION ---
 # 1. Path to your recorded .wav file
-target_file = "../training_data/test/Calm.wav" 
+target_file = "../training_data/test/Happy.wav" 
 
 # 2. Which model to use? (Check your ./models folder)
 model_path = "../models/voice_vitals_resnet_0.65acc.tflite" 
@@ -22,6 +22,13 @@ def preprocess_single_file(file_path):
         audio, _ = librosa.load(file_path, sr=SAMPLE_RATE, mono=True)
         # Normalize to -1.0 to 1.0 range (fixes "Angry" bias from loud mics)
         max_val = np.max(np.abs(audio))
+        if max_val > 0: # Avoid dividing by zero if silent
+            audio = audio / max_val
+        # ---------------------------------
+        # Anything below 10% volume is considered "silence" and set to 0.
+        # This kills the fan noise/hiss that looks like "Anger".
+        #threshold = 0.1
+        #audio[np.abs(audio) < threshold] = 0
     except Exception as e:
         print(f"Error loading file: {e}")
         return None
@@ -79,6 +86,15 @@ if __name__ == "__main__":
         
         if probs is not None:
             # 4. Results
+            # --- HACK: PUNISH THE ANGRY CLASS ---
+            # Index 4 is usually Angry in RAVDESS (Check your specific list order!)
+            # We multiply it by 0.5 to suppress false positives.
+            angry_index = EMOTIONS.index("Angry") 
+            probs[angry_index] = probs[angry_index] * 0.5
+            
+            # Re-normalize probabilities so they sum to 1.0 again
+            probs = probs / np.sum(probs)
+
             max_index = np.argmax(probs)
             confidence = probs[max_index] * 100
             
