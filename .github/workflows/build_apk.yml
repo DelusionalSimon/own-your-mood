@@ -13,39 +13,41 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Java
+    - name: Setup Java 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17' 
+        java-version: '17'
 
-
-    # 2. Setup Python
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
-    # 3. Setup Flutter (REQUIRED for Flet 0.22.1 builds)
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.19.6' # Matches the Flet 0.22.x era
+        flutter-version: '3.19.6'
         channel: 'stable'
 
-    - name: Install Android NDK
+    - name: Install Android NDK & Accept Licenses
       run: |
-        # NDK 25b or 26b are usually safest for Flet 0.22
-        sdkmanager "ndk;25.2.9519653"
+        # Use the absolute path to sdkmanager
+        SDK_MANAGER=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+        
+        echo "y" | $SDK_MANAGER --licenses
+        $SDK_MANAGER "ndk;25.2.9519653"
+        
+        # Set NDK path for the build environment
         echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
 
-    - name: Build APK
-      env:
-        # These help some C-extensions find the right cross-compiler
-        CC: aarch64-linux-android24-clang
-        CXX: aarch64-linux-android24-clang++
+    - name: Install Flet
       run: |
-        # We add --no-cache-dir to ensure we don't grab a half-baked build
-        # and we explicitly tell flet to include these packages
+        python -m pip install --upgrade pip
+        pip install flet==0.22.1
+
+    - name: Build APK
+      run: |
+        # We pass the environment variables directly to ensure the C-compiler for Android is used
         flet build apk --verbose \
-          --include-packages flet_audio_recorder,numpy,opencv-python-headless
+          --include-packages flet-audio-recorder,numpy==1.25.2,opencv-python-headless==4.8.0.74
