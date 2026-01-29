@@ -13,24 +13,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 1. Setup Java 17 (Required for Android Builds)
+    # 1. Setup Java 11 (Required for older Android Builds)
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '11'
 
     # 2. Setup Python
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.11''
 
     # 3. Install Flet & Dependencies
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flet flet-audio-recorder numpy ai-edge-litert
+        # Pinning Flet to 0.22.1 forces the Python 3.11 build chain
+        pip install flet==0.22.1 flet-audio-recorder numpy tflite-runtime
 
     # 4. Install Linux Dependencies (Fixes the GTK error)
     - name: Install Linux Dependencies

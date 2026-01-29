@@ -1,4 +1,4 @@
-flet
+flet==0.22.1
 flet-audio-recorder
 numpy
 ai-edge-litert
