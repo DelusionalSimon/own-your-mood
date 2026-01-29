@@ -1,42 +1,92 @@
 # Own Your Mood
-**The Privacy-First Mental Health Screen | Powered by Edge AI**
 
-![Platform](https://img.shields.io/badge/Platform-Android-green) ![Model](https://img.shields.io/badge/Model-ResNet1D-blue) ![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-red) ![Status](https://img.shields.io/badge/Status-Hackathon%20Prototype-orange)
+**Real-time Voice Emotion Detection running 100% Offline.**
 
-> **"Your voice reveals your mental state. But you shouldn't have to trade your privacy to understand it."**
+Own Your Mood is a privacy-first AI application that analyzes the emotional tone of your voice in real-time. Built with **Python & Flet**, it uses a custom **ResNet neural network** optimized for **TensorFlow Lite** to detect emotions like Happiness, Anger, and Sadness without ever sending audio to the cloud.
+
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
+![Flet](https://img.shields.io/badge/UI-Flet-purple?logo=flutter&logoColor=white)
+![TFLite](https://img.shields.io/badge/AI-TensorFlow%20Lite-orange?logo=tensorflow&logoColor=white)
+![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-red?logo=adblock&logoColor=white)
 
 ---
 
-**⚠️ HACKATHON DISCLAIMER**
-This project was "vibecoded" in 24 hours during the GoWest 2026 Hackathon. The architecture is sound, but the codebase reflects the speed of the event. Expect hardcoded paths, rapid prototyping patterns, and a focus on "making it work" over "making it perfect."
+## Features
+
+* **Real-Time Inference:** Instant feedback on your emotional tone as you speak.
+* **Privacy First:** All processing happens locally on your device (TFLite Interpreter). No API keys, no cloud servers.
+* **Cross-Platform:** Runs on **Windows**, **macOS**, **Linux**, and **Android**.
+* **Smart Noise Gate:** Filters out background noise to focus only on your voice.
+* **Dynamic UI:** Visualizes confidence levels and intensity in real-time.
+
+## Tech Stack
+
+* **Frontend:** [Flet](https://flet.dev) (Flutter for Python)
+* **AI Engine:** TensorFlow Lite (or `tflite-runtime`)
+* **Audio Processing:** `numpy` & `flet-audio-recorder`
+* **Model:** Custom ResNet trained on RAVDESS/TESS datasets, converted to `.tflite`.
 
 ---
 
-## The Problem
-Mental health is a global crisis, but digital diagnostic tools are failing due to **Privacy Paralysis**.
-* **The Trap:** Current AI solutions often require uploading intimate voice recordings to the cloud for processing.
-* **The Risk:** Under regulations like GDPR and HIPAA, voice is a biometric. Storing it creates massive liability and user distrust. Patients won't talk to an app if they think Big Tech is listening.
+## Getting Started
 
-## The Solution: Epistemic Edge AI
-**Own Your Mood** is an "Air-Gapped" diagnostic tool. It detects biomarkers of **Depression** and **Anxiety** from the *physics* of your voice—without a single byte of audio ever leaving your phone.
+### Prerequisites
+* Python 3.10 or higher (3.11 recommended)
+* A microphone
 
-We use **Embedl Hub** to optimize a deep **ResNet-1D** architecture, enabling it to run in real-time on standard Android hardware.
+### 1. Clone the Repo
+```bash
+git clone [https://github.com/your-username/own-your-mood.git](https://github.com/your-username/own-your-mood.git)
+cd own-your-mood
+```
+2. Install Dependencies
+Important: We strictly pin numpy<2.0 because TensorFlow Lite is not yet compatible with the newer Numpy 2.0 versions.
 
-## The Science: Physics, Not Words
-Unlike standard NLP models that analyze *what* you say (semantics), we analyze *how* you say it (prosody). Our model hunts for specific "Glitches in the Physics" of speech production:
+```Bash
+pip install -r requirements.txt
+```
+3. Run the App
+```Bash
+python main.py
+```
 
-| Biomarker | The "Glitch" | Clinical Correlation |
-| :--- | :--- | :--- |
-| **Flat Affect** | Reduced Fundamental Frequency (F0) Variance | Depression / Psychomotor Retardation |
-| **Jitter** | High-frequency micro-tremors in pitch | Anxiety / Stress Response |
-| **Shimmer** | Amplitude instability | Neurological Fatigue |
-| **Pacing** | Abnormal pause duration (>500ms) | Cognitive Load / Depression |
+**Building for Android**
+This project includes a GitHub Action to automatically build an APK (in the android-deployment branch).
 
-## Embedl Integration & Performance
-We used **Embedl Hub** to compress our ResNet architecture for mobile deployment, proving that deep learning is viable on edge devices without sacrificing user experience.
+Push your code to GitHub.
 
-* **Model:** ResNet-18 (Adapted for 1D/Spectrograms)
-* **Framework:** TensorFlow -> TFLite
-* **Optimization Target:** Latency & Battery Life
-* **Result:** ~15ms inference time on Pixel hardware
+The workflow .github/workflows/build_apk.yml will trigger.
 
+Once finished, go to the Actions tab, click the latest run, and download the app-release artifact.
+
+NOTE: WE couldn't resolve all dependencies
+
+**Manual Build Requirements**
+If you want to build locally, you need the Flet CLI:
+
+```Bash
+flet build apk
+Project Structure
+```
+```Plaintext
+own-your-mood/
+├── assets/
+│   └── voice_model.tflite  # The optimized AI model
+├── emotion_detector.py     # AI Logic (Audio processing + TFLite inference)
+├── main.py                 # UI Logic (Flet App)
+├── requirements.txt        # Dependency lockfile
+└── .github/
+    └── workflows/
+        └── build_apk.yml   # CI/CD Pipeline
+```
+**Troubleshooting**
+"A module that was compiled using NumPy 1.x cannot be run in NumPy 2.0.2" This is the most common error. TensorFlow currently requires Numpy 1.x. Fix:
+
+```Bash
+pip install "numpy<2.0"
+```
+"No module named 'tflite_runtime'" If you are not using the full TensorFlow library, ensure you have the runtime installed:
+
+```Bash
+pip install tflite-runtime
+```
