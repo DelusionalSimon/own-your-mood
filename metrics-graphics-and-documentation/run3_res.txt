@@ -1,0 +1,196 @@
+Epoch 1: val_accuracy improved from -inf to 0.36199, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 21s 164ms/step - loss: 1.6101 - accuracy: 0.3106 - val_loss: 1.5039 - val_accuracy: 0.3620
+Epoch 2/150
+93/94 [============================>.] - ETA: 0s - loss: 1.5155 - accuracy: 0.3654 
+Epoch 2: val_accuracy improved from 0.36199 to 0.38952, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 15s 161ms/step - loss: 1.5155 - accuracy: 0.3654 - val_loss: 1.4724 - val_accuracy: 0.3895
+Epoch 3/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4877 - accuracy: 0.3837 
+Epoch 3: val_accuracy did not improve from 0.38952
+94/94 [==============================] - 15s 163ms/step - loss: 1.4880 - accuracy: 0.3837 - val_loss: 1.9585 - val_accuracy: 0.1968
+Epoch 4/150
+93/94 [============================>.] - ETA: 0s - loss: 1.5082 - accuracy: 0.3785 
+Epoch 4: val_accuracy improved from 0.38952 to 0.39691, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 15s 164ms/step - loss: 1.5083 - accuracy: 0.3785 - val_loss: 1.4765 - val_accuracy: 0.3969
+Epoch 5/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4935 - accuracy: 0.3755 
+Epoch 5: val_accuracy improved from 0.39691 to 0.40631, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 16s 166ms/step - loss: 1.4936 - accuracy: 0.3754 - val_loss: 1.4581 - val_accuracy: 0.4063
+Epoch 6/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4763 - accuracy: 0.3863 
+Epoch 6: val_accuracy did not improve from 0.40631
+94/94 [==============================] - 15s 163ms/step - loss: 1.4762 - accuracy: 0.3864 - val_loss: 1.4698 - val_accuracy: 0.3875
+Epoch 7/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4752 - accuracy: 0.3878 
+Epoch 7: val_accuracy did not improve from 0.40631
+94/94 [==============================] - 15s 163ms/step - loss: 1.4752 - accuracy: 0.3879 - val_loss: 1.4585 - val_accuracy: 0.3969
+Epoch 8/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4758 - accuracy: 0.3864 
+Epoch 8: val_accuracy improved from 0.40631 to 0.41706, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 15s 165ms/step - loss: 1.4757 - accuracy: 0.3865 - val_loss: 1.4346 - val_accuracy: 0.4171
+Epoch 9/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4657 - accuracy: 0.3921 
+Epoch 9: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 15s 165ms/step - loss: 1.4659 - accuracy: 0.3921 - val_loss: 1.4480 - val_accuracy: 0.4003
+Epoch 10/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4700 - accuracy: 0.3938 
+Epoch 10: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 16s 165ms/step - loss: 1.4699 - accuracy: 0.3939 - val_loss: 1.4591 - val_accuracy: 0.3969
+Epoch 11/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4648 - accuracy: 0.3908 
+Epoch 11: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 16s 166ms/step - loss: 1.4649 - accuracy: 0.3907 - val_loss: 1.4256 - val_accuracy: 0.4164
+Epoch 12/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4639 - accuracy: 0.3962 
+Epoch 12: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 17s 182ms/step - loss: 1.4640 - accuracy: 0.3961 - val_loss: 1.4425 - val_accuracy: 0.4030
+Epoch 13/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4615 - accuracy: 0.3884 
+Epoch 13: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 19s 201ms/step - loss: 1.4615 - accuracy: 0.3884 - val_loss: 1.4334 - val_accuracy: 0.4150
+Epoch 14/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4593 - accuracy: 0.3898 
+Epoch 14: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 18s 197ms/step - loss: 1.4593 - accuracy: 0.3899 - val_loss: 1.4268 - val_accuracy: 0.4137
+Epoch 15/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4465 - accuracy: 0.3963 
+Epoch 15: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 18s 197ms/step - loss: 1.4465 - accuracy: 0.3964 - val_loss: 1.3968 - val_accuracy: 0.4157
+Epoch 16/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4338 - accuracy: 0.4020 
+Epoch 16: val_accuracy did not improve from 0.41706
+94/94 [==============================] - 21s 220ms/step - loss: 1.4335 - accuracy: 0.4022 - val_loss: 1.3914 - val_accuracy: 0.4137
+Epoch 17/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4228 - accuracy: 0.4073 
+Epoch 17: val_accuracy improved from 0.41706 to 0.41773, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 21s 226ms/step - loss: 1.4228 - accuracy: 0.4074 - val_loss: 1.3981 - val_accuracy: 0.4177
+Epoch 18/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4239 - accuracy: 0.4066 
+Epoch 18: val_accuracy did not improve from 0.41773
+94/94 [==============================] - 19s 207ms/step - loss: 1.4238 - accuracy: 0.4067 - val_loss: 1.4147 - val_accuracy: 0.4063
+Epoch 19/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4123 - accuracy: 0.4062 
+Epoch 19: val_accuracy improved from 0.41773 to 0.42512, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 20s 217ms/step - loss: 1.4121 - accuracy: 0.4063 - val_loss: 1.3749 - val_accuracy: 0.4251
+Epoch 20/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4030 - accuracy: 0.4180 
+Epoch 20: val_accuracy did not improve from 0.42512
+94/94 [==============================] - 23s 241ms/step - loss: 1.4030 - accuracy: 0.4179 - val_loss: 1.4397 - val_accuracy: 0.4124
+Epoch 21/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4045 - accuracy: 0.4136 
+Epoch 21: val_accuracy did not improve from 0.42512
+94/94 [==============================] - 23s 240ms/step - loss: 1.4045 - accuracy: 0.4136 - val_loss: 1.3933 - val_accuracy: 0.4184
+Epoch 22/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4136 - accuracy: 0.4138 
+Epoch 22: val_accuracy improved from 0.42512 to 0.43049, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 23s 240ms/step - loss: 1.4137 - accuracy: 0.4137 - val_loss: 1.3717 - val_accuracy: 0.4305
+Epoch 23/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3945 - accuracy: 0.4168 
+Epoch 23: val_accuracy improved from 0.43049 to 0.43989, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 22s 237ms/step - loss: 1.3944 - accuracy: 0.4169 - val_loss: 1.3621 - val_accuracy: 0.4399
+Epoch 24/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3887 - accuracy: 0.4252 
+Epoch 24: val_accuracy did not improve from 0.43989
+94/94 [==============================] - 24s 252ms/step - loss: 1.3885 - accuracy: 0.4253 - val_loss: 1.4020 - val_accuracy: 0.4298
+Epoch 25/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3827 - accuracy: 0.4259 
+Epoch 25: val_accuracy did not improve from 0.43989
+94/94 [==============================] - 24s 253ms/step - loss: 1.3828 - accuracy: 0.4258 - val_loss: 1.4792 - val_accuracy: 0.3761
+Epoch 26/150
+93/94 [============================>.] - ETA: 0s - loss: 1.4107 - accuracy: 0.4051 
+Epoch 26: val_accuracy did not improve from 0.43989
+94/94 [==============================] - 23s 247ms/step - loss: 1.4106 - accuracy: 0.4052 - val_loss: 1.3483 - val_accuracy: 0.4379
+Epoch 27/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3791 - accuracy: 0.4308 
+Epoch 27: val_accuracy did not improve from 0.43989
+94/94 [==============================] - 21s 224ms/step - loss: 1.3792 - accuracy: 0.4307 - val_loss: 1.3723 - val_accuracy: 0.4325
+Epoch 28/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3836 - accuracy: 0.4267 
+Epoch 28: val_accuracy improved from 0.43989 to 0.45332, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 24s 251ms/step - loss: 1.3836 - accuracy: 0.4267 - val_loss: 1.3513 - val_accuracy: 0.4533
+Epoch 29/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3906 - accuracy: 0.4215 
+Epoch 29: val_accuracy did not improve from 0.45332
+94/94 [==============================] - 23s 250ms/step - loss: 1.3906 - accuracy: 0.4215 - val_loss: 1.3646 - val_accuracy: 0.4325
+Epoch 30/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3735 - accuracy: 0.4296 
+Epoch 30: val_accuracy did not improve from 0.45332
+94/94 [==============================] - 23s 249ms/step - loss: 1.3735 - accuracy: 0.4295 - val_loss: 1.3551 - val_accuracy: 0.4399
+Epoch 31/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3504 - accuracy: 0.4404 
+Epoch 31: val_accuracy did not improve from 0.45332
+94/94 [==============================] - 24s 252ms/step - loss: 1.3503 - accuracy: 0.4403 - val_loss: 1.3245 - val_accuracy: 0.4527
+Epoch 32/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3476 - accuracy: 0.4399 
+Epoch 32: val_accuracy improved from 0.45332 to 0.45870, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 25s 267ms/step - loss: 1.3475 - accuracy: 0.4399 - val_loss: 1.3204 - val_accuracy: 0.4587
+Epoch 33/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3413 - accuracy: 0.4434 
+Epoch 33: val_accuracy improved from 0.45870 to 0.45937, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 288ms/step - loss: 1.3413 - accuracy: 0.4433 - val_loss: 1.3667 - val_accuracy: 0.4594
+Epoch 34/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3578 - accuracy: 0.4377 
+Epoch 34: val_accuracy improved from 0.45937 to 0.46138, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 285ms/step - loss: 1.3577 - accuracy: 0.4378 - val_loss: 1.3123 - val_accuracy: 0.4614
+Epoch 35/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3220 - accuracy: 0.4543 
+Epoch 35: val_accuracy did not improve from 0.46138
+94/94 [==============================] - 27s 284ms/step - loss: 1.3220 - accuracy: 0.4544 - val_loss: 1.3435 - val_accuracy: 0.4433
+Epoch 36/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3476 - accuracy: 0.4427 
+Epoch 36: val_accuracy improved from 0.46138 to 0.46407, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 284ms/step - loss: 1.3475 - accuracy: 0.4428 - val_loss: 1.3082 - val_accuracy: 0.4641
+Epoch 37/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3231 - accuracy: 0.4545 
+Epoch 37: val_accuracy improved from 0.46407 to 0.48556, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 285ms/step - loss: 1.3230 - accuracy: 0.4544 - val_loss: 1.2882 - val_accuracy: 0.4856
+Epoch 38/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3177 - accuracy: 0.4592 
+Epoch 38: val_accuracy did not improve from 0.48556
+94/94 [==============================] - 27s 284ms/step - loss: 1.3176 - accuracy: 0.4593 - val_loss: 1.3938 - val_accuracy: 0.4137
+Epoch 39/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3275 - accuracy: 0.4553 
+Epoch 39: val_accuracy improved from 0.48556 to 0.48758, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 284ms/step - loss: 1.3275 - accuracy: 0.4552 - val_loss: 1.2891 - val_accuracy: 0.4876
+Epoch 40/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3105 - accuracy: 0.4605 
+Epoch 40: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 284ms/step - loss: 1.3109 - accuracy: 0.4604 - val_loss: 1.2939 - val_accuracy: 0.4748
+Epoch 41/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3418 - accuracy: 0.4506 
+Epoch 41: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 284ms/step - loss: 1.3418 - accuracy: 0.4505 - val_loss: 1.4270 - val_accuracy: 0.4023
+Epoch 42/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3379 - accuracy: 0.4491 
+Epoch 42: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 284ms/step - loss: 1.3378 - accuracy: 0.4490 - val_loss: 1.2988 - val_accuracy: 0.4788
+Epoch 43/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3013 - accuracy: 0.4654 
+Epoch 43: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 285ms/step - loss: 1.3013 - accuracy: 0.4653 - val_loss: 1.3086 - val_accuracy: 0.4520
+Epoch 44/150
+93/94 [============================>.] - ETA: 0s - loss: 1.3002 - accuracy: 0.4656 
+Epoch 44: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 284ms/step - loss: 1.3001 - accuracy: 0.4656 - val_loss: 1.2697 - val_accuracy: 0.4822
+Epoch 45/150
+93/94 [============================>.] - ETA: 0s - loss: 1.2946 - accuracy: 0.4691 
+Epoch 45: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 285ms/step - loss: 1.2947 - accuracy: 0.4690 - val_loss: 1.2824 - val_accuracy: 0.4835
+Epoch 46/150
+93/94 [============================>.] - ETA: 0s - loss: 1.2867 - accuracy: 0.4772 
+Epoch 46: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 285ms/step - loss: 1.2866 - accuracy: 0.4772 - val_loss: 1.2739 - val_accuracy: 0.4876
+Epoch 47/150
+93/94 [============================>.] - ETA: 0s - loss: 1.2784 - accuracy: 0.4805 
+Epoch 47: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 286ms/step - loss: 1.2785 - accuracy: 0.4804 - val_loss: 1.2938 - val_accuracy: 0.4809
+Epoch 48/150
+93/94 [============================>.] - ETA: 0s - loss: 1.2967 - accuracy: 0.4711 
+Epoch 48: val_accuracy did not improve from 0.48758
+94/94 [==============================] - 27s 285ms/step - loss: 1.2967 - accuracy: 0.4710 - val_loss: 1.3560 - val_accuracy: 0.4433
+Epoch 49/150
+93/94 [============================>.] - ETA: 0s - loss: 1.2921 - accuracy: 0.4740 
+Epoch 49: val_accuracy improved from 0.48758 to 0.50235, saving model to ./models\voice_model_cremad_resnet.h5
+94/94 [==============================] - 27s 287ms/step - loss: 1.2920 - accuracy: 0.4740 - val_loss: 1.2528 - val_accuracy: 0.5024
+Epoch 50/150
+ 7/94 [=>............................] - ETA: 23s - loss: 1.2777 - accuracy: 0.45762
