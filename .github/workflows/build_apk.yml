@@ -1,0 +1,40 @@
+name: Build Android APK
+
+on:
+  push:
+    # This asterisk means "Run on ANY branch you push"
+    branches: [ "*" ] 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Python Dependencies
+      # We removed 'scipy' to save build time, assuming you aren't using it heavily
+      run: |
+        python -m pip install --upgrade pip
+        pip install flet flet-audio-recorder numpy ai-edge-litert
+
+    - name: Setup Flet
+      run: curl -fsSL https://flet.dev/install | bash
+
+    - name: Build APK
+      # We use --verbose to see if the AI library loads correctly
+      run: |
+        flet build apk --include-packages ai_edge_litert --verbose
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: build/apk/app-release.apk
