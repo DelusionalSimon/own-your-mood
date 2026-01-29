@@ -8,15 +8,28 @@ import wave
 import numpy as np
 from pathlib import Path
 
-# Try importing TFLite runtime (optimized for Edge), fallback to full TF
+# --- IMPORT LOGIC FOR ANDROID / PC ---
+tflite = None
 try:
-    import tflite_runtime.interpreter as tflite
+    # 1. Try the new Google AI Edge library (Recommended for Python 3.12+)
+    import ai_edge_litert.interpreter as tflite_lib
+    tflite = tflite_lib
+    print("✅ Loaded ai-edge-litert")
 except ImportError:
     try:
-        import tensorflow.lite as tflite
+        # 2. Try the classic runtime (Raspberry Pi / Older Python)
+        import tflite_runtime.interpreter as tflite_lib
+        tflite = tflite_lib
+        print("✅ Loaded tflite-runtime")
     except ImportError:
-        print("CRITICAL: TensorFlow Lite not found. Install 'tflite-runtime' or 'tensorflow'.")
-        tflite = None
+        try:
+            # 3. Fallback to full TensorFlow (Desktop Dev)
+            import tensorflow.lite as tflite_lib
+            tflite = tflite_lib
+            print("✅ Loaded full tensorflow")
+        except ImportError:
+            print("⚠️ WARNING: No TFLite library found. AI will be mocked.")
+            tflite = None
 
 class EmotionDetector:
     """Real emotion detection using TFLite ResNet"""

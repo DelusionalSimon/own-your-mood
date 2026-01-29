@@ -1,4 +1,4 @@
 flet
 flet-audio-recorder
 numpy
-tflite-runtime
+ai-edge-litert
