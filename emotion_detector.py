@@ -14,21 +14,21 @@ try:
     # 1. Try the new Google AI Edge library (Recommended for Python 3.12+)
     import ai_edge_litert.interpreter as tflite_lib
     tflite = tflite_lib
-    print("✅ Loaded ai-edge-litert")
+    print("Loaded ai-edge-litert")
 except ImportError:
     try:
         # 2. Try the classic runtime (Raspberry Pi / Older Python)
         import tflite_runtime.interpreter as tflite_lib
         tflite = tflite_lib
-        print("✅ Loaded tflite-runtime")
+        print("Loaded tflite-runtime")
     except ImportError:
         try:
             # 3. Fallback to full TensorFlow (Desktop Dev)
             import tensorflow.lite as tflite_lib
             tflite = tflite_lib
-            print("✅ Loaded full tensorflow")
+            print("Loaded full tensorflow")
         except ImportError:
-            print("⚠️ WARNING: No TFLite library found. AI will be mocked.")
+            print("WARNING: No TFLite library found. AI will be mocked.")
             tflite = None
 
 class EmotionDetector:
