@@ -15,7 +15,7 @@ except ImportError:
     try:
         import tensorflow.lite as tflite
     except ImportError:
-        print("⚠️ CRITICAL: TensorFlow Lite not found. Install 'tflite-runtime' or 'tensorflow'.")
+        print("CRITICAL: TensorFlow Lite not found. Install 'tflite-runtime' or 'tensorflow'.")
         tflite = None
 
 class EmotionDetector:
@@ -67,7 +67,7 @@ class EmotionDetector:
 
     def analyze_audio(self, audio_file_path):
         """
-        Reads WAV, processes (NO NORMALIZATION), and predicts.
+        Reads WAV, processes, and predicts.
         """
         if not Path(audio_file_path).exists():
             return {'emotion': 'neutral', 'intensity': 'low', 'error': 'File not found'}
@@ -95,6 +95,11 @@ class EmotionDetector:
                 # CRITICAL STEP: Convert to Float (-1.0 to 1.0) WITHOUT altering relative volume
                 # Do NOT use: audio / np.max(audio)
                 audio_float = audio_int16.astype(np.float32) / 32768.0
+
+                # multiply by 3.0 to boost laptop mic volume
+                audio_float = audio_float * 3.0 
+                # clip at 1.0 to prevent distortion.
+                audio_float = np.clip(audio_float, -1.0, 1.0)
 
             # Pad/Trim to exactly 48000 samples (3 seconds)
             target_len = 48000
@@ -125,6 +130,13 @@ class EmotionDetector:
             # Build result dictionary matching the Mock's format
             meta = self.EMOTIONS.get(emotion_key, self.EMOTIONS['neutral'])
             
+            # --- DEBUG PRINTS ---
+            print(f"Max Amplitude: {np.max(np.abs(audio_float)):.4f}") 
+            print("Raw Confidences:")
+            for i, score in enumerate(output_data):
+                print(f"   {self.MODEL_CLASSES[i]}: {score:.4f}")
+            # -------------------------------
+
             return {
                 'emotion': emotion_key,
                 'intensity': intensity,
