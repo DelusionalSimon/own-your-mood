@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # Config
-DAYS_BACK = 5
+DAYS_BACK = 7 # Number of days to seed
 REC_DIR = Path("recordings")
 REC_DIR.mkdir(exist_ok=True)
 
-print(f"🌱 Seeding {DAYS_BACK} days of history...")
+print(f" Seeding {DAYS_BACK} days of history...")
 
 for i in range(DAYS_BACK):
     # Calculate date (Today, Yesterday, etc.)
@@ -31,4 +31,4 @@ for i in range(DAYS_BACK):
 
     print(f"  Created entry for: {date_obj.strftime('%Y-%m-%d')}")
 
-print("\nDone! Restart the app to see your 🔥 5 Day Streak.")
+print("\nDone! Restart the app to test your streak.")
