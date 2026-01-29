@@ -176,6 +176,19 @@ class EmotionDetector:
     def get_all_emotions(self):
         return list(self.EMOTIONS.keys())
 
+    def _build_result(self, emotion, confidence, intensity):
+        """Helper to build consistent result dictionary"""
+        meta = self.EMOTIONS.get(emotion, self.EMOTIONS['neutral'])
+        return {
+            'emotion': emotion,
+            'intensity': intensity,
+            'color': meta['color'],
+            'emoji': meta['emoji'],
+            'icon': meta['icon'],
+            'timestamp': time.time(),
+            'confidence': float(confidence)
+        }
+
     def _get_fallback_result(self):
         """Returns neutral if things break, prevents app crash"""
         return {
