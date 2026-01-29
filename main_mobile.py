@@ -1,6 +1,6 @@
 """
-Voice Recorder App - Mobile Version
-A modern voice recording application built with Flet for Android/iOS.
+Voice Recorder App - Mobile Version (Cute & Minimal)
+A stable, cute voice recording application for Android/iOS.
 """
 import flet as ft
 import flet_audio_recorder as far
@@ -42,8 +42,8 @@ class VoiceRecorderApp:
         """Configure page settings"""
         self.page.title = "Own Your Mood"
         self.page.theme_mode = ft.ThemeMode.DARK
+        self.page.bgcolor = "#1a1625" # Deep cute purple-ish dark
         self.page.padding = 20
-        # Mobile-friendly dimensions for testing
         self.page.window.width = 400 
         self.page.window.height = 800
 
@@ -53,27 +53,38 @@ class VoiceRecorderApp:
         header = ft.Container(
             content=ft.Row(
                 [
-                    ft.Icon(ft.Icons.PSYCHOLOGY, size=40, color=ft.Colors.BLUE_400),
-                    ft.Text("Own Your Mood", size=28, weight=ft.FontWeight.BOLD),
+                    #ft.Icon(ft.Icons.FAVORITE, size=32, color=ft.Colors.PINK_300),
+                    ft.Text("Own Your Mood!", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
+                    #ft.Icon(ft.Icons.FAVORITE, size=32, color=ft.Colors.PINK_300),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
-            margin=ft.Margin(0, 0, 0, 20),
+            margin=ft.Margin(0, 20, 0, 20),
         )
         
         # Navigation Buttons
         self.recorder_btn = ft.ElevatedButton(
-            "Recorder",
+            "Record",
             icon=ft.Icons.MIC,
             on_click=lambda e: self.switch_view(0),
-            style=ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE),
+            style=ft.ButtonStyle(
+                bgcolor=ft.Colors.PINK_400, 
+                color=ft.Colors.WHITE,
+                shape=ft.RoundedRectangleBorder(radius=20)
+            ),
+            width=130
         )
         
         self.analytics_btn = ft.ElevatedButton(
-            "Analytics",
-            icon=ft.Icons.BAR_CHART,
+            "Insights",
+            icon=ft.Icons.PIE_CHART,
             on_click=lambda e: self.switch_view(1),
-            style=ft.ButtonStyle(color=ft.Colors.WHITE),
+            style=ft.ButtonStyle(
+                color=ft.Colors.WHITE,
+                bgcolor=ft.Colors.WHITE10,
+                shape=ft.RoundedRectangleBorder(radius=20)
+            ),
+            width=130
         )
         
         nav_row = ft.Row(
@@ -104,12 +115,12 @@ class VoiceRecorderApp:
 
     def switch_view(self, index):
         if index == 0:
-            self.recorder_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
-            self.analytics_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.SURFACE_VARIANT, color=ft.Colors.WHITE)
+            self.recorder_btn.style.bgcolor = ft.Colors.PINK_400
+            self.analytics_btn.style.bgcolor = ft.Colors.WHITE10
             self.content_container.content = self.recorder_content
         else:
-            self.recorder_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.SURFACE_VARIANT, color=ft.Colors.WHITE)
-            self.analytics_btn.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_400, color=ft.Colors.WHITE)
+            self.recorder_btn.style.bgcolor = ft.Colors.WHITE10
+            self.analytics_btn.style.bgcolor = ft.Colors.PINK_400
             self.content_container.content = self.build_analytics_tab()
         self.page.update()
 
@@ -118,43 +129,50 @@ class VoiceRecorderApp:
         self.recording_indicator = ft.Container(
             content=ft.Row(
                 [
-                    ft.Icon(ft.Icons.FIBER_MANUAL_RECORD, color=ft.Colors.RED, size=20),
-                    ft.Text("Listening...", size=16, color=ft.Colors.RED),
+                    ft.Icon(ft.Icons.CIRCLE, color=ft.Colors.PINK_400, size=12),
+                    ft.Text(" Listening...", size=16, color=ft.Colors.PINK_100),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
             visible=False,
         )
         
-        self.timer_text = ft.Text("00:00", size=48, weight=ft.FontWeight.BOLD)
+        self.timer_text = ft.Text("00:00", size=50, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         
-        self.record_button = ft.ElevatedButton(
-            "Start Recording",
-            icon=ft.Icons.MIC,
+        # Cute Round Button
+        self.record_button = ft.Container(
+            content=ft.Icon(ft.Icons.MIC, size=40, color=ft.Colors.WHITE),
+            width=90, height=90,
+            bgcolor=ft.Colors.PINK_500,
+            border_radius=45,
+            alignment=ft.alignment.center,
             on_click=self.start_recording,
-            style=ft.ButtonStyle(bgcolor=ft.Colors.RED_400, color=ft.Colors.WHITE),
-            height=60, width=160
+            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.PINK_900, offset=ft.Offset(0, 4))
         )
         
-        self.stop_button = ft.ElevatedButton(
-            "Stop Analysis",
-            icon=ft.Icons.STOP,
+        self.stop_button = ft.Container(
+            content=ft.Icon(ft.Icons.STOP_ROUNDED, size=40, color=ft.Colors.WHITE),
+            width=90, height=90,
+            bgcolor=ft.Colors.PURPLE_400,
+            border_radius=45,
+            alignment=ft.alignment.center,
             on_click=self.stop_recording_click,
-            style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_700, color=ft.Colors.WHITE),
-            height=60, width=160,
-            visible=False
+            visible=False,
+            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.PURPLE_900, offset=ft.Offset(0, 4))
         )
         
-        self.recordings_list = ft.Column(spacing=10, scroll=ft.ScrollMode.AUTO)
+        self.recordings_list = ft.Column(spacing=10, scroll=ft.ScrollMode.HIDDEN)
 
         return ft.Container(
             content=ft.Column(
                 [
+                    ft.Container(height=10),
                     self.recording_indicator,
                     ft.Container(self.timer_text, alignment=ft.alignment.center, padding=10),
+                    ft.Container(height=10),
                     ft.Row([self.record_button, self.stop_button], alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Divider(),
-                    ft.Text("Recent Analyses", size=16, weight=ft.FontWeight.BOLD),
+                    ft.Container(height=30),
+                    ft.Text("Past Moods", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE70),
                     ft.Container(self.recordings_list, expand=True)
                 ],
             ),
@@ -170,54 +188,52 @@ class VoiceRecorderApp:
         def stat_card(title, value):
             return ft.Container(
                 content=ft.Column([
-                    ft.Text(title, size=12, color=ft.Colors.GREY_400),
-                    ft.Text(str(value), size=24, weight=ft.FontWeight.BOLD)
+                    ft.Text(title, size=12, color=ft.Colors.WHITE54),
+                    ft.Text(str(value), size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
                 ], spacing=2, alignment=ft.MainAxisAlignment.CENTER),
-                bgcolor=ft.Colors.BLUE_GREY_900, padding=15, border_radius=10, expand=True
+                bgcolor=ft.Colors.WHITE10, 
+                padding=15, 
+                border_radius=20, 
+                expand=True
             )
 
         row1 = ft.Row([
-            stat_card("Total", stats['total_recordings']),
-            stat_card("Analyzed", stats['recordings_with_emotions']),
+            stat_card("Total Entries", stats['total_recordings']),
+            stat_card("Moods Found", stats['recordings_with_emotions']),
         ])
         
-        dist_col = ft.Column()
+        dist_col = ft.Column(spacing=10)
         for emotion, pct in stats['emotion_percentages'].items():
             meta = self.emotion_detector.get_emotion_info(emotion)
             dist_col.controls.append(
                 ft.Container(
                     content=ft.Row([
-                        ft.Text(f"{meta['emoji']} {emotion.capitalize()}", size=16),
-                        ft.Text(f"{pct:.1f}%", weight=ft.FontWeight.BOLD)
+                        ft.Text(f"{meta['emoji']} {emotion.capitalize()}", size=16, color=ft.Colors.WHITE),
+                        ft.Text(f"{pct:.0f}%", weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE70)
                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    padding=10, border_radius=5, bgcolor=meta['color']
+                    padding=15, 
+                    border_radius=15, 
+                    bgcolor=meta['color'] # Using the emotion color directly
                 )
             )
 
         return ft.Container(
             content=ft.Column([
                 row1, 
-                ft.Divider(height=20),
-                ft.Text("Emotional Profile", size=18, weight=ft.FontWeight.BOLD),
+                ft.Divider(height=20, color="transparent"),
+                ft.Text("Emotional Profile", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE70),
+                ft.Container(height=10),
                 dist_col
-            ], scroll=ft.ScrollMode.AUTO),
+            ], scroll=ft.ScrollMode.HIDDEN),
             padding=10
         )
 
     # --- RECORDING LOGIC ---
-    # --- RECORDING LOGIC ---
     def start_recording(self, e):
-        # Generate a temp filename in the recordings folder
-        # We use the manager's directory just to get a safe path
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        temp_filename = f"temp_recording_{timestamp}.wav"
-        
-        # Construct full path. 
-        # Note: on Android strict paths matter, but flet handles local paths well.
-        # We will use the 'recordings' folder we created in the manager.
+        temp_filename = f"temp_{timestamp}.wav"
         save_path = str(self.recorder_manager.recordings_dir / temp_filename)
 
-        # Start the recorder with the explicit path
         self.audio_recorder.start_recording(output_path=save_path)
         self.is_recording = True
         
@@ -228,15 +244,11 @@ class VoiceRecorderApp:
         self.page.update()
 
     async def stop_recording_click(self, e):
-        """Stops recording and retrieves the file path"""
         self.is_recording = False
         self.timer_running = False
         
-        # Stop recording.
-        # This returns the path we set in start_recording
         output_path = await self.audio_recorder.stop_recording_async()
         
-        # Reset UI
         self.record_button.visible = True
         self.stop_button.visible = False
         self.recording_indicator.visible = False
@@ -244,35 +256,27 @@ class VoiceRecorderApp:
         self.page.update()
 
         if output_path:
-            # 1. Finalize the file 
-            # (We use the manager to copy it to the clean timestamped filename)
             final_path = self.recorder_manager.save_recording(output_path)
-            
-            # 2. Run AI Analysis
             if final_path:
                 self.run_analysis(final_path)
 
     def handle_recorder_state(self, e):
-        # Useful for debugging state changes (recording/stopped/etc)
         print(f"Recorder State: {e.data}")
 
     def run_analysis(self, filepath):
-        self.page.snack_bar = ft.SnackBar(content=ft.Text("Analyzing voice biometrics..."), bgcolor=ft.Colors.BLUE_GREY_700)
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text("Reading vibes..."), 
+            bgcolor=ft.Colors.PURPLE_700
+        )
         self.page.snack_bar.open = True
         self.page.update()
 
         def analyze():
-            # Run inference in a background thread to keep UI responsive
             result = self.emotion_detector.analyze_audio(filepath)
-            
-            # Save results
             self.recorder_manager.save_emotion_metadata(filepath, result)
-            
-            # Update UI (Must be done on main thread conceptually, but Flet handles threaded updates well)
             self.refresh_recordings_list()
             
-            # Show Result
-            msg = f"Detected: {result['emoji']} {result['emotion'].capitalize()}"
+            msg = f"Vibe: {result['emoji']} {result['emotion'].capitalize()}"
             self.page.snack_bar = ft.SnackBar(content=ft.Text(msg), bgcolor=result.get('color', 'green'))
             self.page.snack_bar.open = True
             self.page.update()
@@ -284,32 +288,47 @@ class VoiceRecorderApp:
         recs = self.recorder_manager.get_recordings()
         
         if not recs:
-            self.recordings_list.controls.append(ft.Text("No recordings yet.", italic=True, color=ft.Colors.GREY))
+            self.recordings_list.controls.append(
+                ft.Container(
+                    content=ft.Text("No vibes yet. Record something!", italic=True, color=ft.Colors.WHITE24),
+                    padding=20, alignment=ft.alignment.center
+                )
+            )
         
         for r in recs:
             self.recordings_list.controls.append(self.create_recording_item(r))
         self.page.update()
 
     def create_recording_item(self, r):
+        # Format the timestamp nicely
+        date_obj = r['timestamp']
+        date_str = date_obj.strftime("%b %d, %H:%M") # e.g. "Oct 24, 14:30"
+
         return ft.Container(
             content=ft.Row([
-                ft.Icon(ft.Icons.AUDIO_FILE, color=ft.Colors.BLUE_200),
+                # Emoji Box
+                ft.Container(
+                    content=ft.Text(r['emotion_emoji'] or "✨", size=24),
+                    padding=10,
+                    bgcolor=ft.Colors.WHITE10,
+                    border_radius=15
+                ),
+                # Text Info (No Filename!)
                 ft.Column([
-                    ft.Text(r['filename'], weight=ft.FontWeight.BOLD),
-                    ft.Text(f"{r['emotion_emoji'] or ''} {r['emotion'] or 'Unknown'}", size=12)
+                    ft.Text(f"{r['emotion'].capitalize() if r['emotion'] else 'Processing...'}", weight=ft.FontWeight.BOLD, size=16, color=ft.Colors.WHITE),
+                    ft.Text(date_str, size=12, color=ft.Colors.WHITE54)
                 ], expand=True),
                 
-                # Play Button (Uses Flet Audio)
-                ft.IconButton(ft.Icons.PLAY_ARROW, on_click=lambda e: self.play_audio(r['path'])),
-                
-                # Delete Button
-                ft.IconButton(ft.Icons.DELETE, icon_color="red", on_click=lambda e: self.delete_rec(r['path']))
+                # Actions
+                ft.IconButton(ft.Icons.PLAY_ARROW_ROUNDED, icon_color=ft.Colors.PINK_200, on_click=lambda e: self.play_audio(r['path'])),
+                ft.IconButton(ft.Icons.DELETE_OUTLINE_ROUNDED, icon_color=ft.Colors.WHITE24, on_click=lambda e: self.delete_rec(r['path']))
             ]),
-            bgcolor=ft.Colors.BLUE_GREY_900, padding=10, border_radius=5
+            bgcolor=ft.Colors.WHITE10, 
+            padding=10, 
+            border_radius=20
         )
 
     def play_audio(self, path):
-        # Flet Audio overlay for mobile playback
         audio = ft.Audio(src=path, autoplay=True)
         self.page.overlay.append(audio)
         self.page.update()
