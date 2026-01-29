@@ -2,6 +2,7 @@
 Voice Recorder Module
 Handles audio recording, playback, and file management
 """
+from fileinput import filename
 import sounddevice as sd
 import soundfile as sf
 import numpy as np
@@ -57,7 +58,9 @@ class VoiceRecorder:
         if status:
             print(f"Audio callback status: {status}")
         if self.recording and not self.paused:
-            self.audio_data.append(indata.copy())
+            # Multiply by 0.5 to cut volume in half and prevent clipping.
+            safe_audio = indata.copy() * 0.5
+            self.audio_data.append(safe_audio)
     
     def pause_recording(self):
         """Pause the current recording"""
@@ -98,8 +101,9 @@ class VoiceRecorder:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = self.recordings_dir / f"recording_{timestamp}.wav"
         
-        # Save the audio file
-        sf.write(filename, audio_array, self.sample_rate)
+        
+        # Force 16-bit PCM format so the detector can read it correctly
+        sf.write(filename, audio_array, self.sample_rate, subtype='PCM_16')
         
         return str(filename)
     
