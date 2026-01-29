@@ -1,6 +1,4 @@
 flet==0.22.1
 flet-audio-recorder
 numpy==1.24.4
-#tflite-runtime
-# Pivoting to onnxruntime via opencv
 opencv-python 
