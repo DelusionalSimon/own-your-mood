@@ -1,114 +1,164 @@
 """
-Mock Emotion Detector
-Simulates emotion detection from audio files
-In production, this would be replaced with a real ML model or API
+REAL Emotion Detector (TFLite)
+Runs the custom ResNet model on raw audio waveforms.
 """
-import random
+import os
 import time
+import wave
+import numpy as np
 from pathlib import Path
 
+# Try importing TFLite runtime (optimized for Edge), fallback to full TF
+try:
+    import tflite_runtime.interpreter as tflite
+except ImportError:
+    try:
+        import tensorflow.lite as tflite
+    except ImportError:
+        print("⚠️ CRITICAL: TensorFlow Lite not found. Install 'tflite-runtime' or 'tensorflow'.")
+        tflite = None
 
 class EmotionDetector:
-    """Mock emotion detection for voice recordings"""
+    """Real emotion detection using TFLite ResNet"""
     
-    # Available emotions with associated colors and emojis
-    # Based on the 6 basic emotions (Ekman's model)
+    # 1. SETUP UI MAPPING
+    # We map the Model's 6 classes to the UI's colors/icons.
+    # Note: 'Surprise' is removed (Model doesn't know it). 'Neutral' is added.
     EMOTIONS = {
-        'happiness': {'color': '#4CAF50', 'emoji': '😊', 'icon': 'sentiment_satisfied'},
-        'sadness': {'color': '#2196F3', 'emoji': '😢', 'icon': 'sentiment_dissatisfied'},
-        'fear': {'color': '#9C27B0', 'emoji': '😨', 'icon': 'psychology_alt'},
+        'neutral': {'color': '#9E9E9E', 'emoji': '😐', 'icon': 'sentiment_neutral'},
+        'happy':   {'color': '#4CAF50', 'emoji': '😊', 'icon': 'sentiment_satisfied'},
+        'sad':     {'color': '#2196F3', 'emoji': '😢', 'icon': 'sentiment_dissatisfied'},
+        'angry':   {'color': '#F44336', 'emoji': '😠', 'icon': 'sentiment_very_dissatisfied'},
+        'fearful': {'color': '#9C27B0', 'emoji': '😨', 'icon': 'psychology_alt'},
         'disgust': {'color': '#795548', 'emoji': '🤢', 'icon': 'sick'},
-        'anger': {'color': '#F44336', 'emoji': '😠', 'icon': 'sentiment_very_dissatisfied'},
-        'surprise': {'color': '#FF9800', 'emoji': '😲', 'icon': 'auto_awesome'},
     }
     
-    # Intensity levels
+    # Model Output Order (Must match your training labels.txt!)
+    MODEL_CLASSES = ['neutral', 'happy', 'sad', 'angry', 'fearful', 'disgust']
+    
     INTENSITY_LEVELS = ['low', 'medium', 'high']
     
-    def __init__(self):
-        """Initialize the emotion detector"""
-        self.processing_time = 1.5  # Simulate processing delay
-    
+    def __init__(self, model_filename="voice_model_cremad_resnet.tflite"):
+        """Initialize the TFLite interpreter"""
+        self.interpreter = None
+        self.input_details = None
+        self.output_details = None
+        
+        # Look for model in assets or current dir
+        paths_to_check = [
+            Path("assets") / model_filename,
+            Path(model_filename),
+            Path("models") / model_filename
+        ]
+        
+        model_path = next((p for p in paths_to_check if p.exists()), None)
+        
+        if model_path and tflite:
+            try:
+                self.interpreter = tflite.Interpreter(model_path=str(model_path))
+                self.interpreter.allocate_tensors()
+                self.input_details = self.interpreter.get_input_details()
+                self.output_details = self.interpreter.get_output_details()
+                print(f" Model loaded: {model_path}")
+            except Exception as e:
+                print(f" Model Load Error: {e}")
+        else:
+            print(f" Model file '{model_filename}' not found. Check your folders.")
+
     def analyze_audio(self, audio_file_path):
         """
-        Analyze an audio file and return detected emotion
-        
-        Args:
-            audio_file_path: Path to the audio file
-            
-        Returns:
-            dict: Emotion analysis result with emotion, intensity, and metadata
+        Reads WAV, processes (NO NORMALIZATION), and predicts.
         """
-        # Simulate processing time
-        time.sleep(self.processing_time)
-        
-        # Check if file exists
         if not Path(audio_file_path).exists():
-            return {
-                'emotion': 'sadness',
-                'intensity': 'low',
-                'error': 'File not found'
-            }
-        
-        # Mock analysis: randomly select an emotion and intensity
-        # In production, this would analyze audio features:
-        # - Pitch variations (high pitch = fear/surprise, low = sadness)
-        # - Speaking rate (fast = anger/fear, slow = sadness)
-        # - Voice intensity (loud = anger, quiet = sadness/fear)
-        # - Spectral features
-        # - etc.
-        
-        emotion = random.choice(list(self.EMOTIONS.keys()))
-        intensity = random.choice(self.INTENSITY_LEVELS)
-        
-        result = {
-            'emotion': emotion,
-            'intensity': intensity,
-            'color': self.EMOTIONS[emotion]['color'],
-            'emoji': self.EMOTIONS[emotion]['emoji'],
-            'icon': self.EMOTIONS[emotion]['icon'],
-            'timestamp': time.time(),
-        }
-        
-        return result
-    
-    def get_emotion_info(self, emotion_name):
-        """
-        Get metadata for a specific emotion
-        
-        Args:
-            emotion_name: Name of the emotion
+            return {'emotion': 'neutral', 'intensity': 'low', 'error': 'File not found'}
+
+        # If model failed to load, return dummy data so app doesn't crash
+        if self.interpreter is None:
+            return self._get_fallback_result()
+
+        try:
+            # --- 1. PRE-PROCESSING (The "Scream Effect" Fix) ---
+            # We use standard 'wave' lib to read raw bytes
+            with wave.open(str(audio_file_path), 'rb') as wf:
+                sr = wf.getframerate()
+                
+                # Warning if sample rate is wrong (Model needs 16000)
+                if sr != 16000:
+                    print(f" Sample Rate Mismatch: File is {sr}Hz, Model needs 16000Hz. Predictions may fail.")
+
+                # Read all frames
+                frames = wf.readframes(wf.getnframes())
+                
+                # Convert 16-bit PCM bytes to Int16 array
+                audio_int16 = np.frombuffer(frames, dtype=np.int16)
+                
+                # CRITICAL STEP: Convert to Float (-1.0 to 1.0) WITHOUT altering relative volume
+                # Do NOT use: audio / np.max(audio)
+                audio_float = audio_int16.astype(np.float32) / 32768.0
+
+            # Pad/Trim to exactly 48000 samples (3 seconds)
+            target_len = 48000
+            if len(audio_float) > target_len:
+                audio_float = audio_float[:target_len]
+            else:
+                padding = target_len - len(audio_float)
+                audio_float = np.pad(audio_float, (0, padding), 'constant')
+
+            # Reshape for TFLite [Batch, Time, Channels] -> [1, 48000, 1]
+            input_tensor = audio_float.reshape(1, target_len, 1)
+
+            # --- 2. INFERENCE ---
+            self.interpreter.set_tensor(self.input_details[0]['index'], input_tensor)
+            self.interpreter.invoke()
+            output_data = self.interpreter.get_tensor(self.output_details[0]['index'])[0]
+
+            # --- 3. DECODE RESULTS ---
+            max_index = np.argmax(output_data)
+            confidence = output_data[max_index]
+            emotion_key = self.MODEL_CLASSES[max_index]
             
-        Returns:
-            dict: Emotion metadata (color, emoji, icon)
-        """
-        return self.EMOTIONS.get(emotion_name.lower(), self.EMOTIONS['sadness'])
+            # Calculate Intensity based on confidence score
+            if confidence > 0.85: intensity = 'high'
+            elif confidence > 0.55: intensity = 'medium'
+            else: intensity = 'low'
+
+            # Build result dictionary matching the Mock's format
+            meta = self.EMOTIONS.get(emotion_key, self.EMOTIONS['neutral'])
+            
+            return {
+                'emotion': emotion_key,
+                'intensity': intensity,
+                'color': meta['color'],
+                'emoji': meta['emoji'],
+                'icon': meta['icon'],
+                'timestamp': time.time(),
+                'confidence': float(confidence) # Extra debug info
+            }
+
+        except Exception as e:
+            print(f" Analysis Error: {e}")
+            return self._get_fallback_result()
+
+    def get_emotion_info(self, emotion_name):
+        """Metadata lookup for UI"""
+        return self.EMOTIONS.get(emotion_name.lower(), self.EMOTIONS['neutral'])
     
     def get_all_emotions(self):
-        """Get list of all available emotions"""
         return list(self.EMOTIONS.keys())
 
+    def _get_fallback_result(self):
+        """Returns neutral if things break, prevents app crash"""
+        return {
+            'emotion': 'neutral',
+            'intensity': 'low', 
+            'color': '#9E9E9E',
+            'emoji': '❓', 
+            'icon': 'help',
+            'timestamp': time.time()
+        }
 
-# Example usage and testing
 if __name__ == "__main__":
-    detector = EmotionDetector()
-    
-    print("Mock Emotion Detector - Test Run")
-    print("=" * 50)
-    print("\nAvailable emotions (6 basic emotions):")
-    for emotion, info in detector.EMOTIONS.items():
-        print(f"  {info['emoji']} {emotion.capitalize()}: {info['color']}")
-    
-    print(f"\nIntensity levels: {', '.join(detector.INTENSITY_LEVELS)}")
-    
-    print("\n" + "=" * 50)
-    print("Simulating emotion detection...")
-    print("=" * 50)
-    
-    # Simulate analyzing a few recordings
-    for i in range(5):
-        print(f"\nRecording {i+1}:")
-        result = detector.analyze_audio("mock_recording.wav")
-        print(f"  Emotion: {result['emoji']} {result['emotion'].capitalize()}")
-        print(f"  Intensity: {result['intensity'].capitalize()}")
-        print(f"  Color: {result['color']}")
+    # Quick Test
+    det = EmotionDetector()
+    print("Testing Emotions config...")
+    print(det.get_all_emotions())
