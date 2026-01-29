@@ -1,4 +1,4 @@
 flet==0.22.1
 flet-audio-recorder
-numpy==1.26.4
+numpy==1.23.5
 opencv-python-headless
