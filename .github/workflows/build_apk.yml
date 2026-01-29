@@ -13,22 +13,34 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # 1. Setup Java 17 (Required for Android Builds)
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    # 2. Setup Python
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
-    - name: Install Dependencies
+    # 3. Install Flet & Dependencies
+    - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
-        # We install Flet here. This provides the correct CLI.
         pip install flet flet-audio-recorder numpy ai-edge-litert
 
-    
+    # 4. Accept Android Licenses (The Critical Fix)
+    # We use the system's SDK Manager to sign the licenses before Flet tries to run.
+    - name: Accept Android Licenses
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || echo "Failed to accept licenses via sdkmanager, proceeding anyway..."
 
+    # 5. Build APK
+    # We still pipe 'yes' just in case Flet needs to confirm the Flutter install again.
     - name: Build APK
-
-      # We pipe 'yes' into the command so it auto-accepts the install prompt
       run: yes | flet build apk --verbose
 
     - name: Upload APK
