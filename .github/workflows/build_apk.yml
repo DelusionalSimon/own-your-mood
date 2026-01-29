@@ -26,22 +26,26 @@ jobs:
       with:
         python-version: '3.12'
 
-    # 3. Install Flet & Dependencies
+    # 3. Install Linux Dependencies (Fixes the GTK error)
+    - name: Install Linux Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev
+
+    # 4. Install Flet & Python Libs
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flet flet-audio-recorder numpy ai-edge-litert
 
-    # 4. Accept Android Licenses (The Critical Fix)
-    # We use the system's SDK Manager to sign the licenses before Flet tries to run.
+    # 5. Accept Android Licenses
     - name: Accept Android Licenses
       run: |
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || echo "Failed to accept licenses via sdkmanager, proceeding anyway..."
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || echo "Proceeding..."
 
-    # 5. Build APK
-    # We still pipe 'yes' just in case Flet needs to confirm the Flutter install again.
+    # 6. Build APK
     - name: Build APK
-      run: yes | flet build apk --verbose
+      run: flet build apk --verbose
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
