@@ -37,9 +37,7 @@ jobs:
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
-        # 1. Install Numpy FIRST to lock the version
-        pip install "numpy==1.24.4"
-        # 2. Install the rest, which will now see Numpy is already satisfied
+        # Install exactly what is in requirements.txt
         pip install -r requirements.txt
 
     # 5. Install Linux Dependencies (Fixes the GTK error)
