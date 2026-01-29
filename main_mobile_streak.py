@@ -1,5 +1,5 @@
 """
-Voice Recorder App - Mobile Version (Cute & Minimal + Dynamic Streak)
+Voice Recorder App - Mobile Version (Cute & Minimal + Tight Fires)
 A stable, cute voice recording application for Android/iOS with Advanced Habit Tracking.
 """
 import flet as ft
@@ -29,7 +29,7 @@ class VoiceRecorderApp:
         
         # UI Components
         self.streak_text = None 
-        self.streak_fire = None # New dynamic fire control
+        self.streak_fire_row = None # Changed to Row for custom spacing
         self.record_button = None
         self.stop_button = None
         self.timer_text = None
@@ -79,31 +79,37 @@ class VoiceRecorderApp:
                 
         return streak
 
-    def get_fire_emoji(self, streak):
-        """Returns the correct number of fires based on streak length"""
+    def get_fire_count(self, streak):
+        """Returns the number of fires based on streak length"""
         if streak == 0:
-            return "🔥" # Default greyed out or single fire
+            return 1 # Show 1 grey/dim fire if 0
         elif streak < 7:
-            return "🔥"
+            return 1
         elif streak < 30:
-            return "🔥🔥"
+            return 2
         else:
-            return "🔥🔥🔥"
+            return 3
 
     def build_ui(self):
         """Build the user interface"""
         
         # --- HEADER WITH DYNAMIC STREAK ---
         self.streak_text = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
-        self.streak_fire = ft.Text("🔥", size=20) # Dynamic Emoji Text
+        
+        # We use a Row with negative spacing to push fires closer
+        self.streak_fire_row = ft.Row(
+            controls=[ft.Text("🔥", size=20)], 
+            spacing=-5, # Negative spacing pushes them together
+            alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER
+        )
         
         streak_badge = ft.Container(
             content=ft.Row([
-                self.streak_fire,
+                self.streak_fire_row,
                 self.streak_text,
                 ft.Text("Day Streak", size=14, color=ft.Colors.WHITE70)
             ], spacing=5, alignment=ft.MainAxisAlignment.CENTER),
-            # REMOVED bgcolor to make it transparent
             padding=ft.padding.symmetric(horizontal=15, vertical=8),
         )
 
@@ -354,9 +360,16 @@ class VoiceRecorderApp:
             
         # 2. Update Streak
         streak = self.calculate_streak()
-        if self.streak_text and self.streak_fire:
+        
+        # Update Text
+        if self.streak_text:
             self.streak_text.value = str(streak)
-            self.streak_fire.value = self.get_fire_emoji(streak)
+            
+        # Update Fire Row
+        count = self.get_fire_count(streak)
+        if self.streak_fire_row:
+            # Rebuild the list of fire controls
+            self.streak_fire_row.controls = [ft.Text("🔥", size=20) for _ in range(count)]
             
         self.page.update()
 
