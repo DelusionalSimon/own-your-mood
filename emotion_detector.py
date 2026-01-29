@@ -38,7 +38,7 @@ class EmotionDetector:
     
     INTENSITY_LEVELS = ['low', 'medium', 'high']
     
-    def __init__(self, model_filename="voice_model_cremad_resnet.tflite"):
+    def __init__(self, model_filename="voice_model.tflite"):
         """Initialize the TFLite interpreter"""
         self.interpreter = None
         self.input_details = None
@@ -77,31 +77,37 @@ class EmotionDetector:
             return self._get_fallback_result()
 
         try:
-            # --- 1. PRE-PROCESSING (The "Scream Effect" Fix) ---
-            # We use standard 'wave' lib to read raw bytes
+            # --- 1. LOAD RAW AUDIO ---
             with wave.open(str(audio_file_path), 'rb') as wf:
-                sr = wf.getframerate()
-                
-                # Warning if sample rate is wrong (Model needs 16000)
-                if sr != 16000:
-                    print(f" Sample Rate Mismatch: File is {sr}Hz, Model needs 16000Hz. Predictions may fail.")
-
-                # Read all frames
                 frames = wf.readframes(wf.getnframes())
-                
-                # Convert 16-bit PCM bytes to Int16 array
                 audio_int16 = np.frombuffer(frames, dtype=np.int16)
-                
-                # CRITICAL STEP: Convert to Float (-1.0 to 1.0) WITHOUT altering relative volume
-                # Do NOT use: audio / np.max(audio)
                 audio_float = audio_int16.astype(np.float32) / 32768.0
 
-                # multiply by 3.0 to boost laptop mic volume
-                audio_float = audio_float * 3.0 
-                # clip at 1.0 to prevent distortion.
-                audio_float = np.clip(audio_float, -1.0, 1.0)
+            # --- 2. THE NOISE GATE (Background Talker Killer) ---
+            # Calculate the Peak volume of the Main Speaker (You)
+            max_amp = np.max(np.abs(audio_float))
+            
+            # Threshold: Keep only sounds that are at least 30% as loud as the peak.
+            # Background talking is usually 10-20% volume. You are 80-100%.
+            gate_threshold = max_amp * 0.30 
+            
+            # Apply the gate: Everything below threshold becomes 0.0 (Silence)
+            # We use a mask to avoid "choppy" artifacts
+            mask = np.abs(audio_float) > gate_threshold
+            audio_gated = audio_float * mask
+            
+            # Update metrics based on the NEW gated audio
+            audio_float = audio_gated
+            max_amp = np.max(np.abs(audio_float))
+            print(f"🎤 Main Speaker Amp: {max_amp:.4f} (Background Silenced)")
 
-            # Pad/Trim to exactly 48000 samples (3 seconds)
+            # --- 3. SILENCE CHECK ---
+            # If the gate killed EVERYTHING (because you didn't speak), return Neutral.
+            if max_amp < 0.1:
+                return self._build_result('neutral', 0.9, 'low')
+
+            # --- 4. PREPARE FOR AI ---
+            # Pad/Trim to 48000
             target_len = 48000
             if len(audio_float) > target_len:
                 audio_float = audio_float[:target_len]
@@ -109,7 +115,6 @@ class EmotionDetector:
                 padding = target_len - len(audio_float)
                 audio_float = np.pad(audio_float, (0, padding), 'constant')
 
-            # Reshape for TFLite [Batch, Time, Channels] -> [1, 48000, 1]
             input_tensor = audio_float.reshape(1, target_len, 1)
 
             # --- 2. INFERENCE ---
