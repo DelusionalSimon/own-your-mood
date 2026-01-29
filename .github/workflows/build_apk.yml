@@ -27,8 +27,8 @@ jobs:
     
 
     - name: Build APK
-      # The pip-installed 'flet' will automatically download the Android SDKs it needs.
-      run: flet build apk --include-packages ai_edge_litert --verbose
+      
+      run: flet build apk --verbose
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
