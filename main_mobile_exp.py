@@ -1,6 +1,6 @@
 """
-Voice Recorder App - Mobile Version (Cute & Minimal + Streak)
-A stable, cute voice recording application for Android/iOS with Habit Tracking.
+Voice Recorder App - Mobile Version (Cute & Minimal + Dynamic Streak)
+A stable, cute voice recording application for Android/iOS with Advanced Habit Tracking.
 """
 import flet as ft
 import flet_audio_recorder as far
@@ -9,7 +9,7 @@ from emotion_detector import EmotionDetector
 from analytics import EmotionAnalytics
 import threading
 import time
-from datetime import datetime, timedelta # Added for streak logic
+from datetime import datetime, timedelta
 
 class VoiceRecorderApp:
     def __init__(self, page: ft.Page):
@@ -28,7 +28,8 @@ class VoiceRecorderApp:
         self.page.overlay.append(self.audio_recorder)
         
         # UI Components
-        self.streak_text = None # New Streak UI
+        self.streak_text = None 
+        self.streak_fire = None # New dynamic fire control
         self.record_button = None
         self.stop_button = None
         self.timer_text = None
@@ -68,7 +69,6 @@ class VoiceRecorderApp:
             return 0
             
         streak = 1
-        # Check consecutive days backwards
         current_date = last_recording
         for prev_date in dates[1:]:
             if (current_date - prev_date).days == 1:
@@ -79,22 +79,32 @@ class VoiceRecorderApp:
                 
         return streak
 
+    def get_fire_emoji(self, streak):
+        """Returns the correct number of fires based on streak length"""
+        if streak == 0:
+            return "🔥" # Default greyed out or single fire
+        elif streak < 7:
+            return "🔥"
+        elif streak < 30:
+            return "🔥🔥"
+        else:
+            return "🔥🔥🔥"
+
     def build_ui(self):
         """Build the user interface"""
         
-        # --- HEADER WITH STREAK ---
-        self.streak_text = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.ORANGE_300)
+        # --- HEADER WITH DYNAMIC STREAK ---
+        self.streak_text = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        self.streak_fire = ft.Text("🔥", size=20) # Dynamic Emoji Text
         
         streak_badge = ft.Container(
             content=ft.Row([
-                ft.Icon(ft.Icons.LOCAL_FIRE_DEPARTMENT_ROUNDED, color=ft.Colors.ORANGE_400, size=20),
+                self.streak_fire,
                 self.streak_text,
-                ft.Text("Day Streak", size=14, color=ft.Colors.ORANGE_100)
+                ft.Text("Day Streak", size=14, color=ft.Colors.WHITE70)
             ], spacing=5, alignment=ft.MainAxisAlignment.CENTER),
+            # REMOVED bgcolor to make it transparent
             padding=ft.padding.symmetric(horizontal=15, vertical=8),
-            bgcolor=ft.Colors.ORANGE_900,
-            border_radius=20,
-            opacity=0.8
         )
 
         header = ft.Container(
@@ -344,8 +354,9 @@ class VoiceRecorderApp:
             
         # 2. Update Streak
         streak = self.calculate_streak()
-        if self.streak_text:
+        if self.streak_text and self.streak_fire:
             self.streak_text.value = str(streak)
+            self.streak_fire.value = self.get_fire_emoji(streak)
             
         self.page.update()
 
